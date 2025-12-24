@@ -80,7 +80,6 @@ def download_item_wrapper(args):
     Wrapper to unpack arguments for pool map.
     args: (url, artist_name, song_limit)
     """
-    """
     url, artist_name, song_limit = args
     
     # Add a random initial delay to spread out requests when using multiprocessing
