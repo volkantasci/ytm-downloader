@@ -1,5 +1,7 @@
 import os
 import yt_dlp
+import random
+import time
 from multiprocessing import Pool, cpu_count
 
 def download_album(album_url):
@@ -78,7 +80,13 @@ def download_item_wrapper(args):
     Wrapper to unpack arguments for pool map.
     args: (url, artist_name, song_limit)
     """
+    """
     url, artist_name, song_limit = args
+    
+    # Add a random initial delay to spread out requests when using multiprocessing
+    delay = random.uniform(2, 10)
+    print(f"Waiting {delay:.2f}s before processing {url}...")
+    time.sleep(delay)
     
     # Construct output template
     # If artist_name is known, hardcode it to avoid 'NA' or channel ID being used
@@ -87,6 +95,7 @@ def download_item_wrapper(args):
     else:
         out_template = 'music/%(artist,uploader,channel)s/%(album,playlist_title,playlist)s/%(title)s.%(ext)s'
 
+     # Re-instantiate yt-dlp options here because they can't be pickled easily if we passed the object.
      # Re-instantiate yt-dlp options here because they can't be pickled easily if we passed the object.
     ydl_opts = {
         'format': 'bestaudio/best',
@@ -99,6 +108,8 @@ def download_item_wrapper(args):
         'quiet': False,
         'ignoreerrors': True,
         'writethumbnail': True,
+        'sleep_interval': 10,       # Minimum sleep time (seconds)
+        'max_sleep_interval': 30,   # Maximum sleep time (seconds)
     }
     
     if song_limit and song_limit > 0:

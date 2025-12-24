@@ -13,6 +13,7 @@ It solves common scraping challenges (like headless browser detection) and prior
 -   **High-Fidelity Audio**: Prioritizes **M4A (AAC)** / Opus streams (Best Audio) over legacy MP3 conversion for superior sound quality.
 -   **Smart Navigation**: Uses Selenium with **Chromium** to navigate dynamic YouTube Music pages.
 -   **Anti-Detection**: Built-in `XVFB` (virtual display) integration to bypass "headless browser" blocks and Cloudflare checks.
+-   **Rate Limiting**: Intelligent random delays between downloads to prevent IP blocking/throttling.
 -   **Search-Based Discovery**: Robustly finds artist pages via search queries, avoiding broken direct link issues.
 -   **Granular Control**: Limit downloads by number of albums (`--limit`) or songs per album (`--song-limit`) for testing or partial archiving.
 -   **Navidrome Ready**: Automatically organizes content into `Artist/Album/Song` hierarchy and embeds correct metadata/thumbnails.
