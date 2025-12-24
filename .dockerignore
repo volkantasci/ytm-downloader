@@ -1,0 +1,14 @@
+.git
+.gitignore
+.dockerignore
+.venv
+music
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+test_*.py
+debug_*.png
+.idea
+.vscode

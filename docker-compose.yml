@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  downloader:
+    build: .
+    image: ytm-downloader
+    volumes:
+      - ./music:/app/music
+    environment:
+      - PYTHONUNBUFFERED=1
+    # You can override the command at runtime:
+    # docker-compose run --rm downloader --artist-name "Metallica" --dry-run
