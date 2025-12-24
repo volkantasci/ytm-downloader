@@ -1,4 +1,4 @@
-# YouTube Music to Navidrome Downloader
+# ytm-downloader
 
 A robust, containerized solution for archiving high-fidelity music albums from YouTube Music. Designed to populate self-hosted music streaming servers like **Navidrome**, **Jellyfin**, or **Plex**.
 
@@ -53,8 +53,8 @@ This is the recommended way to run the application.
 
 1.  Clone the repository:
     ```bash
-    git clone https://github.com/volkantasci/album-creator-navidrome.git
-    cd album-creator-navidrome
+    git clone https://github.com/volkantasci/ytm-downloader.git
+    cd ytm-downloader
     ```
 
 2.  Build the container image:
