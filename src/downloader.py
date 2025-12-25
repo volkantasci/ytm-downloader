@@ -2,6 +2,7 @@ import os
 import yt_dlp
 import random
 import time
+import subprocess
 from multiprocessing import Pool, cpu_count
 
 def download_album(album_url):
@@ -30,7 +31,7 @@ from .scraper import MusicScraper
 
 # get_artist_albums is deprecated/removed in favor of scraper
 
-def download_artist_albums(artist_url, artist_name=None, limit=None, song_limit=None, dry_run=False):
+def download_artist_albums(artist_url, artist_name=None, limit=None, song_limit=None, max_album_length=None, dry_run=False):
     """
     Main orchestrator for downloading artist albums.
     """
@@ -69,8 +70,8 @@ def download_artist_albums(artist_url, artist_name=None, limit=None, song_limit=
 
     # Prepare items for download wrapper
     # Pass artist_name to enforce correct directory structure
-    # Pass song_limit as well
-    items = [(url, artist_name, song_limit) for url in album_urls]
+    # Pass song_limit and max_album_length as well
+    items = [(url, artist_name, song_limit, max_album_length) for url in album_urls]
 
     with Pool(processes=cpu_count()) as pool:
         pool.map(download_item_wrapper, items)
@@ -78,15 +79,47 @@ def download_artist_albums(artist_url, artist_name=None, limit=None, song_limit=
 def download_item_wrapper(args):
     """
     Wrapper to unpack arguments for pool map.
-    args: (url, artist_name, song_limit)
+    args: (url, artist_name, song_limit, max_album_length)
     """
-    url, artist_name, song_limit = args
+    url, artist_name, song_limit, max_album_length = args
     
     # Add a random initial delay to spread out requests when using multiprocessing
     delay = random.uniform(2, 10)
     print(f"Waiting {delay:.2f}s before processing {url}...")
     time.sleep(delay)
     
+    # Pre-check album size if max_album_length is set
+    if max_album_length:
+        print(f"Checking track count for {url} with limit {max_album_length}...")
+        try:
+            # Use subprocess to call yt-dlp CLI directly as it proved more reliable for getting playlist_count
+            # for 'browse' type URLs than the Python library in some contexts.
+            cmd = [
+                'yt-dlp',
+                '--flat-playlist',
+                '--print', '%(playlist_count)s',
+                url
+            ]
+            
+            # Run command and capture output
+            result = subprocess.run(cmd, capture_output=True, text=True)
+            output = result.stdout.strip().split('\n')[0] # Take first line
+            
+            if output and output.isdigit():
+                track_count = int(output)
+                print(f"DEBUG: CLI reported track count: {track_count}")
+                
+                if track_count > max_album_length:
+                    print(f"Skipping {url}: Album has {track_count} tracks (Limit: {max_album_length})")
+                    return # Skip this album
+                else:
+                    print(f"Album validated: {track_count} tracks. Proceeding.")
+            else:
+                 print(f"Warning: Could not determine track count from CLI output: '{output}'. Proceeding CAUTIOUSLY.")
+
+        except Exception as e:
+            print(f"Warning: Could not check album length for {url}: {e}. Proceeding.")
+
     # Construct output template
     # If artist_name is known, hardcode it to avoid 'NA' or channel ID being used
     if artist_name:

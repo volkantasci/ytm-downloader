@@ -15,6 +15,7 @@ It solves common scraping challenges (like headless browser detection) and prior
 -   **Anti-Detection**: Built-in `XVFB` (virtual display) integration to bypass "headless browser" blocks and Cloudflare checks.
 -   **Rate Limiting**: Intelligent random delays between downloads to prevent IP blocking/throttling.
 -   **Smart History**: Tracks downloaded songs in `download_archive.txt` to ensure you never download the same song twice, even if filenames change.
+-   **Size Filter**: Use `--max-album-length` to skip massive compilations or playlists (e.g., "Top 100 Hits") that are not real albums.
 -   **Search-Based Discovery**: Robustly finds artist pages via search queries, avoiding broken direct link issues.
 -   **Granular Control**: Limit downloads by number of albums (`--limit`) or songs per album (`--song-limit`) for testing or partial archiving.
 -   **Navidrome Ready**: Automatically organizes content into `Artist/Album/Song` hierarchy and embeds correct metadata/thumbnails.
@@ -82,6 +83,12 @@ docker-compose run --rm downloader --artist-name "Metallica" --dry-run
 Download only the first album, and limited to just 1 song from it.
 ```bash
 docker-compose run --rm downloader --artist-name "Metallica" --limit 1 --song-limit 1
+```
+
+**Filter Large Playlists:**
+Skip any album/playlist with more than 30 songs (good for avoiding "Best Of" chunks).
+```bash
+docker-compose run --rm downloader --artist-name "Metallica" --max-album-length 30
 ```
 
 ## 🔧 Local Development (Linux)
