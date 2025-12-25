@@ -109,6 +109,8 @@ def download_item_wrapper(args):
         'writethumbnail': True,
         'sleep_interval': 10,       # Minimum sleep time (seconds)
         'max_sleep_interval': 30,   # Maximum sleep time (seconds)
+        'download_archive': '/app/music/download_archive.txt', # Track downloaded files
+        'nooverwrites': True,       # Don't overwrite existing files (secondary check)
     }
     
     if song_limit and song_limit > 0:
