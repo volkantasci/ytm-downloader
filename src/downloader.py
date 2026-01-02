@@ -8,6 +8,22 @@ from mutagen.mp4 import MP4, MP4Tags
 from mutagen.easyid3 import EasyID3
 from mutagen.id3 import ID3, ID3NoHeaderError
 from mutagen import File as MutagenFile
+import unicodedata
+
+def normalize_string(s):
+    """
+    Normalizes a string to ASCII, lowercased, stripped of diacritics.
+    Useful for comparing 'Oğuz Aksaç' and 'Oguz Aksac'.
+    """
+    if not s:
+        return ""
+    # Normalize unicode characters to NFD (decomposed)
+    nfd_form = unicodedata.normalize('NFD', str(s))
+    # Filter out non-spacing mark characters (diacritics)
+    normalized = "".join(c for c in nfd_form if unicodedata.category(c) != 'Mn')
+    # Collapse whitespace and lowercase
+    return " ".join(normalized.split()).lower()
+
 
 def download_album(album_url):
     """
@@ -65,18 +81,34 @@ def fix_metadata(filepath, main_artist):
             else:
                 raw_artists = [x.strip() for x in str(artists).split(',')]
             
-            # Deduplicate preserving order
-            clean_artists = list(dict.fromkeys(raw_artists))
+            # Deduplicate preserving order with normalization check
+            unique_artists = []
+            seen_normalized = set()
             
-            # Update if changed
-            # Note: For MP4/mutagen, we usually expect a list of strings for multiple artists, 
-            # or a single string. Youtube Music often puts "Artist A, Artist B" as one string.
-            # We will join them back with ", " or keeping them as list depending on format.
-            # For compatibility, a single string separated by comma is often safest for players 
-            # that don't support multi-value tags well, OR we just keep the first one?
-            # User wants to deduplicate "Oğuz Aksaç, Oğuz Aksaç".
+            # If we know the main artist, add its normalized form to 'seen' 
+            # so slight variations of it are ignored/replaced by it.
+            if main_artist:
+                norm_main = normalize_string(main_artist)
+                # We don't add to seen immediately, because we want to prioritize the main_artist string 
+                # if it appears in the list, OR replace the variation with it.
             
-            new_artist_val = clean_artists
+            for art in raw_artists:
+                norm_art = normalize_string(art)
+                
+                # Check if this artist matches main_artist loosely
+                if main_artist and norm_art == normalize_string(main_artist):
+                    # It's a variation of the main artist. 
+                    # Use the official 'main_artist' string instead of this variation.
+                    # Only add if we haven't added the main artist yet.
+                    if norm_art not in seen_normalized:
+                        unique_artists.append(main_artist)
+                        seen_normalized.add(norm_art)
+                else:
+                    if norm_art not in seen_normalized:
+                        unique_artists.append(art)
+                        seen_normalized.add(norm_art)
+            
+            new_artist_val = unique_artists
             
             # If it was a list and now it's the same list, don't save. 
             # But compare carefully.
