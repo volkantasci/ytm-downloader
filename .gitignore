@@ -33,6 +33,7 @@ music/
 *.log
 debug_*.png
 debug_*.html
+music.tar.gz
 
 # IDE
 .idea/

@@ -87,6 +87,36 @@ class MusicScraper:
                 self._handle_popups()
                 print(f"DEBUG: Post-search URL: {self.driver.current_url}")
                 print(f"DEBUG: Page Title: {self.driver.title}")
+                
+                # Check if we landed on a song/video page instead of artist page
+                if "watch?v=" in self.driver.current_url:
+                    print("DEBUG: Landed on a song page. Trying to find artist link...")
+                    # Artist link is usually under the video title or in metadata
+                    try:
+                        # Common selector for artist name in video player UI
+                        # .yt-simple-endpoint.style-scope.yt-formatted-string[href*='channel'] or similar
+                        # But simpler: look for by-line
+                        
+                        # Wait for secondary info
+                        WebDriverWait(self.driver, 5).until(
+                            EC.presence_of_element_located((By.CSS_SELECTOR, "ytmusic-player-bar"))
+                        )
+                        
+                        # Just grab any link with 'channel' or 'browse' that has the artist name text?
+                        # Or look for the specific "By Artist" element.
+                        
+                        # Let's try finding the owner badge
+                        artist_link = self.driver.find_element(By.CSS_SELECTOR, ".byline.style-scope.ytmusic-player-bar a")
+                        if artist_link:
+                            print(f"DEBUG: Found artist link on song page: {artist_link.get_attribute('href')}")
+                            self.driver.execute_script("arguments[0].click();", artist_link)
+                            time.sleep(3)
+                            self._handle_popups()
+                            print(f"DEBUG: Redirected URL: {self.driver.current_url}")
+                    except Exception as e:
+                        print(f"DEBUG: Could not redirect from song page: {e}")
+                        # If we can't find it, we might be stuck.
+                
                 # Now we should be on the artist page.
                 
             except Exception as e:
