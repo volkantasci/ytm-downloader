@@ -202,6 +202,11 @@ def download_search_query(query, song_limit=None):
         # yt-dlp can handle song URLs same as albums usually
         download_item_wrapper((url, None, song_limit, None))
 
+def download_item_wrapper(args):
+    """
+    Wrapper to unpack arguments for pool map.
+    args: (url, artist_name, song_limit, max_album_length)
+    """
     url, artist_name, song_limit, max_album_length = args
     
     # Add a random initial delay to spread out requests when using multiprocessing

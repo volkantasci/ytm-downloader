@@ -307,11 +307,23 @@ class MusicScraper:
              # Extract link
              link = card.find_element(By.TAG_NAME, "a").get_attribute("href")
              
+             # Extract link
+             link = card.find_element(By.TAG_NAME, "a").get_attribute("href")
+             
+             if "watch" in link:
+                 print(f"DEBUG: Top result is a Song based on URL.")
+                 return link, 'song'
+             elif "browse" in link and "channel" not in link:
+                 # It might be an album or artist. 
+                 # Albums often have MPREb or OLAK
+                 print(f"DEBUG: Top result is likely an Album based on URL.")
+                 return link, 'album'
+             
+             # If "album" or "song" text was in title, fallback to that (though link is better)
              if "album" in title or "albüm" in title:
                   return link, 'album'
              elif "song" in title or "şarkı" in title:
                   return link, 'song'
-             # If artist, we might want to return nothing or handle differently.
              
         except:
             pass
