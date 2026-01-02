@@ -309,8 +309,12 @@ def download_item_wrapper(args):
         
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         try:
-             # Use extract_info to get metadata and filenames
+            # Use extract_info to get metadata and filenames
             info = ydl.extract_info(url, download=True)
+
+            if info is None:
+                print(f"Warning: Could not extract info for {url} (returned None). Check if the video is available.")
+                return
             
             # Process downloaded files
             if 'entries' in info:
@@ -339,35 +343,33 @@ def download_item_wrapper(args):
         except Exception as e:
             print(f"Error downloading {url}: {e}")
 
-def download_search_query(query, song_limit=None):
+def scan_and_fix_library():
     """
-    Searches for a query and downloads the result.
+    Scans music folder and fix metadata for all files.
     """
-    scraper = MusicScraper(headless=False)
-    try:
-        url, result_type = scraper.get_search_results(query)
-    finally:
-        scraper.close()
-    
-    if not url:
-        print(f"No results found for query: '{query}'")
+    print("Scanning and fixing library...")
+    base_path = 'music'
+    if not os.path.exists(base_path):
+        print("Music directory not found.")
         return
 
-    print(f"Found {result_type}: {url}")
-    
-    if result_type == 'album':
-        # Download album
-        # We can reuse download_album or download_item_wrapper logic
-        # But we need artist name for folder grouping... 
-        # Scraper didn't extract artist name from search result yet.
-        # Let's hope yt-dlp gets it right or we pass None to let extractor handle it.
-        # Or we could improve scraper to get artist name.
-        
-        # For uniformity, let's use the wrapper but we need to fake params
-        # (url, artist_name, song_limit, max_album_length)
-        download_item_wrapper((url, None, song_limit, None))
+    for root, dirs, files in os.walk(base_path):
+        for file in files:
+            # support common audio extensions
+            if file.lower().endswith(('.mp3', '.m4a', '.mp4', '.flac', '.opus', '.ogg')):
+                filepath = os.path.join(root, file)
+                
+                # Derive artist from path
+                # Path structure: music/Artist/Album/Song
+                rel = os.path.relpath(filepath, base_path)
+                parts = rel.split(os.sep)
+                
+                # parts[0] is likely Artist if structure is correct
+                if len(parts) >= 2:
+                    artist_name = parts[0]
+                    # Check if it's a known artist directory or 'Unknown' etc?
+                    # For now just pass it. fix_metadata handles logic.
+                    fix_metadata(filepath, artist_name)
 
-    elif result_type == 'song':
-        # Download song
-        # yt-dlp can handle song URLs same as albums usually
-        download_item_wrapper((url, None, song_limit, None))
+
+
