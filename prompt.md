@@ -4,4 +4,4 @@ Basit bir Python projesi yapıyoruz. Amacımız: music.youtube.com üzerinden al
 
 # Şimdi Tamamlanması Gerekenler
 
-1. Şu anda tüm albümler yakalanmıyor. Belki de headless modda bir tarayıcı açmak gerekir. Böylece albüm kapağı linki, albüm şarkıları linki gibi bilgileri alabiliriz. Bunun için selenium kullanabiliriz. Gereken yapıyı profesyonel bir şekilde oluşturmalısınız. 
+1. Şarkıları indirmekte hiçbir sorunumuz yok ancak albümleri ayırmada ve sanatçı isimlerini ayırmada hatalar var. Örneğin bazı parçalarda 3 sanatçı var görübüyor ama üç sanatçı ismi de aynı. Örneğin "Oğuz Aksaç, Oğuz Aksaç, Oğuz Aksaç" gibi. Öte yandan Albüm ismi aynı olup birden çok albüm çıkıyor ortaya. Örneğin Mustafa Özarslan'a ait Beyhude albümü çok defa tekrar ediyor. İçindeki şarkı farklı ama albüm adı aynı. Bu tür problemleri de düzeltmemiz gerekiyor. 

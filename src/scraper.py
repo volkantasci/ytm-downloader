@@ -221,5 +221,102 @@ class MusicScraper:
                 break
             last_height = new_height
 
+    def get_search_results(self, query):
+        """
+        Searches for a query and returns the first result, prioritizing Albums.
+        Returns: (url, type) where type is 'album' or 'song' or None
+        """
+        print(f"DEBUG: Searching for '{query}'...")
+        from urllib.parse import quote
+        
+        # Search URL
+        search_url = f"https://music.youtube.com/search?q={quote(query)}&hl=en"
+        self.driver.get(search_url)
+        time.sleep(3)
+        self._handle_popups()
+        
+        try:
+            # Wait for any results
+            WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.TAG_NAME, "ytmusic-shelf-renderer"))
+            )
+        except TimeoutException:
+            print("DEBUG: No results found or timeout.")
+            return None, None
+
+        # Look for shelves
+        shelves = self.driver.find_elements(By.TAG_NAME, "ytmusic-shelf-renderer")
+        
+        album_url = None
+        song_url = None
+        
+        for shelf in shelves:
+            try:
+                title_el = shelf.find_element(By.CSS_SELECTOR, "h2.title yt-formatted-string")
+                title_text = title_el.text.strip().lower()
+                
+                # Check for "Albums"
+                if "albums" in title_text or "albümler" in title_text:
+                    print("DEBUG: Found Albums section.")
+                    # Get first item
+                    items = shelf.find_elements(By.TAG_NAME, "ytmusic-responsive-list-item-renderer")
+                    if items:
+                         # Link is usually in the first 'a' tag inside 'div.title-column' or similar
+                         # Let's try to find 'a' with href containing 'browse'
+                         links = items[0].find_elements(By.TAG_NAME, "a")
+                         for link in links:
+                             href = link.get_attribute("href")
+                             if href and "browse" in href:
+                                 album_url = href
+                                 break
+                    if album_url: break
+
+                # Check for "Songs" (only if we haven't found an album yet? Or keep looking?)
+                # We prioritize albums, so we can save song url as fallback.
+                if ("songs" in title_text or "şarkılar" in title_text) and not song_url:
+                    print("DEBUG: Found Songs section.")
+                    items = shelf.find_elements(By.TAG_NAME, "ytmusic-responsive-list-item-renderer")
+                    if items:
+                         # Song links usually contain 'watch'
+                         links = items[0].find_elements(By.TAG_NAME, "a")
+                         for link in links:
+                             href = link.get_attribute("href")
+                             if href and "watch" in href:
+                                 song_url = href
+                                 break
+            except:
+                continue
+        
+        if album_url:
+            print(f"DEBUG: Selected Album URL: {album_url}")
+            return album_url, 'album'
+        elif song_url:
+            print(f"DEBUG: Selected Song URL: {song_url}")
+            return song_url, 'song'
+        
+        # If specific shelves not found, try "Top result" logic?
+        # For now, let's return None if strict sections aren't found, OR check the top result.
+        
+        print("DEBUG: No specific Album or Song section found. Checking Top Result...")
+        try:
+             # Top result usually in 'ytmusic-card-shelf-renderer'
+             card = self.driver.find_element(By.TAG_NAME, "ytmusic-card-shelf-renderer")
+             title = card.find_element(By.CLASS_NAME, "title").text.lower()
+             print(f"DEBUG: Top result is '{title}'")
+             
+             # Extract link
+             link = card.find_element(By.TAG_NAME, "a").get_attribute("href")
+             
+             if "album" in title or "albüm" in title:
+                  return link, 'album'
+             elif "song" in title or "şarkı" in title:
+                  return link, 'song'
+             # If artist, we might want to return nothing or handle differently.
+             
+        except:
+            pass
+
+        return None, None
+
     def close(self):
         self.driver.quit()

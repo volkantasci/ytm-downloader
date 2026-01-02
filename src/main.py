@@ -1,5 +1,5 @@
 import click
-from .downloader import download_artist_albums
+from .downloader import download_artist_albums, download_search_query
 
 @click.command()
 @click.option('--artist-url', required=False, help='URL of the artist on music.youtube.com')
@@ -7,11 +7,17 @@ from .downloader import download_artist_albums
 @click.option('--limit', default=None, type=int, help='Limit the number of albums to download')
 @click.option('--song-limit', default=None, type=int, help='Limit the number of songs to download per album')
 @click.option('--max-album-length', default=None, type=int, help='Skip albums with more than this number of tracks')
+@click.option('--search', required=False, help='Search and download an album or song')
 @click.option('--dry-run', is_flag=True, help='List albums without downloading')
-def main(artist_url, artist_name, limit, song_limit, max_album_length, dry_run):
+def main(artist_url, artist_name, limit, song_limit, max_album_length, dry_run, search):
     """
-    Download all albums from a YouTube Music artist URL or Name.
+    Download all albums from a YouTube Music artist URL or Name, or search for a specific album/song.
     """
+    if search:
+        click.echo(f"Searching for: {search}")
+        download_search_query(search, song_limit=song_limit)
+        return
+
     if not artist_url and not artist_name:
         click.echo("Error: Excatly one of --artist-url or --artist-name must be provided.")
         return
