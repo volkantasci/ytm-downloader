@@ -15,6 +15,13 @@ const api = axios.create({
     },
 });
 
+export interface FileNode {
+    name: string;
+    type: 'directory' | 'file';
+    path: string;
+    size: number;
+}
+
 export const searchDownload = async (query: string, songLimit?: number) => {
     return api.post('/downloads/search', { query, song_limit: songLimit });
 };
@@ -31,6 +38,11 @@ export const artistDownload = async (artistUrl: string, artistName: string, limi
 
 export const scanLibrary = async () => {
     return api.post('/library/scan');
+};
+
+export const fetchFiles = async (path: string = ''): Promise<FileNode[]> => {
+    const response = await api.get('/library/files', { params: { path } });
+    return response.data;
 };
 
 export default api;

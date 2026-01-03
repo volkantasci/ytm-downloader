@@ -44,24 +44,39 @@ class Job:
         }
 
 class LogCapture:
-    def __init__(self, queue):
+    def __init__(self, queue, original_stream=None):
         self.queue = queue
+        self.original_stream = original_stream
 
     def write(self, msg):
+        # Write to queue
         if msg.strip(): # Avoid empty newlines
             self.queue.put(msg)
+        
+        # Write to original stream (stdout/stderr) so it appears in docker logs
+        if self.original_stream:
+            try:
+                self.original_stream.write(msg)
+                self.original_stream.flush() # Ensure it appears immediately
+            except:
+                pass
 
     def flush(self):
-        pass
+        if self.original_stream:
+            self.original_stream.flush()
 
 def worker_wrapper(job_id, queue, func, *args, **kwargs):
     """
     Wrapper to run in the separate process.
     Redirects stdout/stderr to the queue.
     """
+    # Capture original streams before replacing
+    orig_stdout = sys.__stdout__
+    orig_stderr = sys.__stderr__
+
     # Redirect stdout/stderr
-    sys.stdout = LogCapture(queue)
-    sys.stderr = LogCapture(queue)
+    sys.stdout = LogCapture(queue, orig_stdout)
+    sys.stderr = LogCapture(queue, orig_stderr)
     
     print(f"Job {job_id} started processing.")
     
@@ -119,6 +134,11 @@ class JobManager:
         return self.jobs.get(job_id)
 
     def list_jobs(self) -> List[Job]:
+        # Update logs/status for all jobs before returning
+        # This ensures UI polling reflects current state without needing to open logs
+        for job_id in list(self.jobs.keys()):
+            self.update_job_logs(job_id)
+            
         # Sort by reverse created_at
         return sorted(self.jobs.values(), key=lambda x: x.created_at, reverse=True)
 

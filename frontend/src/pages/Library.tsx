@@ -4,10 +4,13 @@ import { useJobStore } from '../stores/jobStore';
 import { Library as LibraryIcon, RefreshCw, FolderOpen, Music2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+import { FileBrowserModal } from '../components/FileBrowserModal';
+
 export const Library: React.FC = () => {
     const { fetchJobs } = useJobStore();
     const navigate = useNavigate();
     const [isScanning, setIsScanning] = useState(false);
+    const [isBrowserOpen, setIsBrowserOpen] = useState(false);
 
     const handleScanLibrary = async () => {
         setIsScanning(true);
@@ -45,7 +48,7 @@ export const Library: React.FC = () => {
             </header>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-8 text-center hover:bg-gray-900/80 transition-colors group cursor-pointer">
+                <div onClick={() => setIsBrowserOpen(true)} className="bg-gray-900/50 border border-gray-800 rounded-xl p-8 text-center hover:bg-gray-900/80 transition-colors group cursor-pointer">
                     <div className="w-16 h-16 bg-gray-800 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-500/20 group-hover:text-blue-400 transition-colors text-gray-400">
                         <FolderOpen className="w-8 h-8" />
                     </div>
@@ -74,6 +77,8 @@ export const Library: React.FC = () => {
                     Files are organized by Artist / Album. The scanner will fix metadata tags based on this structure.
                 </p>
             </div>
+
+            <FileBrowserModal isOpen={isBrowserOpen} onClose={() => setIsBrowserOpen(false)} />
         </div>
     );
 };
