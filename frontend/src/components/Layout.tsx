@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
-import { LayoutDashboard, Library as LibraryIcon, Menu, X, Disc } from 'lucide-react';
+import { LayoutDashboard, Library as LibraryIcon, Menu, X } from 'lucide-react';
 import { cn } from '../utils';
 
 export const Layout: React.FC = () => {

@@ -1,10 +1,12 @@
-export enum JobStatus {
-    QUEUED = "queued",
-    RUNNING = "running",
-    COMPLETED = "completed",
-    FAILED = "failed",
-    CANCELLED = "cancelled"
-}
+export const JobStatus = {
+    QUEUED: "queued",
+    RUNNING: "running",
+    COMPLETED: "completed",
+    FAILED: "failed",
+    CANCELLED: "cancelled"
+} as const;
+
+export type JobStatus = typeof JobStatus[keyof typeof JobStatus];
 
 export interface Job {
     id: string;

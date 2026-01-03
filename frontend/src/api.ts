@@ -1,12 +1,9 @@
 import axios from 'axios';
 
-// Create an Axios instance pointing to the FastAPI backend
-// In dev, Vite proxies /api, or we point directly if we set CORS.
-// Let's assume dev server is separate for now, so we point to localhost:8000
-// Dynamically determine the API URL based on the current hostname
-// This allows the app to work whether accessed via localhost, IP, or domain.
-const API_PORT = '8001';
-const baseURL = `${window.location.protocol}//${window.location.hostname}:${API_PORT}/api/v1`;
+// In dev, we point to port 8001. In prod (Nginx), we use relative path /api/v1 which Nginx proxies.
+const baseURL = import.meta.env.DEV
+    ? `${window.location.protocol}//${window.location.hostname}:8001/api/v1`
+    : '/api/v1';
 
 const api = axios.create({
     baseURL,

@@ -1,0 +1,25 @@
+services:
+  backend:
+    build: .
+    image: ytm-downloader-backend:latest
+    container_name: ytm-backend
+    entrypoint: ["./entrypoint.sh", "api"]
+    volumes:
+      - ./music:/app/music
+    ports:
+      - "8001:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: always
+
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: ytm-downloader-frontend:latest
+    container_name: ytm-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: always

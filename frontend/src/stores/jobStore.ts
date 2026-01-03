@@ -18,10 +18,14 @@ interface JobState {
 const getWebSocketUrl = () => {
     // Protocol wss or ws depending on location
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    // Port: Use 8001 if localhost/development, otherwise window.location.port
-    // Assuming backend runs on 8001 per previous api.ts config for dev
-    const port = '8001';
-    return `${protocol}//${window.location.hostname}:${port}/api/v1/jobs`;
+
+    // In Dev: Connect to 8001
+    // In Prod: Connect to current host (Nginx proxies /api)
+    if (import.meta.env.DEV) {
+        return `${protocol}//${window.location.hostname}:8001/api/v1/jobs`;
+    } else {
+        return `${protocol}//${window.location.host}/api/v1/jobs`;
+    }
 };
 
 export const useJobStore = create<JobState>((set, get) => ({

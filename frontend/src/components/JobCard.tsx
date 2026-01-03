@@ -1,7 +1,7 @@
 import React from 'react';
 import { type Job, JobStatus } from '../types';
 import { cn, formatDate } from '../utils';
-import { Terminal, XCircle, CheckCircle, AlertCircle, Clock, Loader2, Play } from 'lucide-react';
+import { Terminal, XCircle, CheckCircle, AlertCircle, Clock, Loader2 } from 'lucide-react';
 
 interface JobCardProps {
     job: Job;
