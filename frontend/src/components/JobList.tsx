@@ -5,20 +5,18 @@ import { LogViewer } from './LogViewer';
 import { RefreshCw } from 'lucide-react';
 
 export const JobList: React.FC = () => {
-    const { jobs, fetchJobs, cancelJob, loading } = useJobStore();
+    const { jobs, fetchJobs, cancelJob, loading, connectWebSocket, disconnectWebSocket } = useJobStore();
     const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
 
-    // Initial fetch and polling
+    // Initial fetch and WebSocket connection
     useEffect(() => {
-        fetchJobs();
-        const interval = setInterval(() => {
-            // Only poll if not loading to avoid pile up? 
-            // Zustand store loading state might be global though.
-            // Let's just poll.
-            fetchJobs();
-        }, 3000);
-        return () => clearInterval(interval);
-    }, [fetchJobs]);
+        fetchJobs(); // Initial fetch
+        connectWebSocket();
+
+        return () => {
+            disconnectWebSocket();
+        };
+    }, []);
 
     const handleViewLogs = (id: string) => setSelectedJobId(id);
     const handleCloseLogs = () => setSelectedJobId(null);

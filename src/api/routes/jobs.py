@@ -72,3 +72,20 @@ async def websocket_endpoint(websocket: WebSocket, job_id: str):
             await websocket.close()
         except:
             pass
+
+@router.websocket("")
+async def ws_jobs(websocket: WebSocket):
+    await websocket.accept()
+    try:
+        while True:
+            jobs = job_manager.list_jobs()
+            await websocket.send_json([job.to_dict() for job in jobs])
+            await asyncio.sleep(1) # Broadcast every second
+    except WebSocketDisconnect:
+        print("Client disconnected from jobs feed")
+    except Exception as e:
+        print(f"Jobs WebSocket error: {e}")
+        try:
+            await websocket.close()
+        except:
+            pass
