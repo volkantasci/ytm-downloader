@@ -1,8 +1,16 @@
 # YTM Downloader v2.0.0 (Agentic)
 
-A powerful, self-hosted YouTube Music downloader and library manager with a modern web interface.
+A powerful, self-hosted YouTube Music downloader and library manager, **designed specifically for Navidrome**.
 
 ![Dashboard](gallery/dashboard.png)
+
+## Why This?
+
+This project isn't just a downloader; it's a **library builder**. It is built to populate self-hosted music text servers like **Navidrome**, **Jellyfin**, or **Plex** with high-quality, properly tagged music.
+
+-   **Navidrome Ready**: Files are organized exactly how Navidrome expects them (`Artist/Album/Track.m4a`).
+-   **Automatic Metadata**: Every song is automatically tagged with correct Title, Artist, Album, and Year.
+-   **Album Art**: High-resolution cover art is embedded directly into every file.
 
 ## Features
 
@@ -10,7 +18,7 @@ A powerful, self-hosted YouTube Music downloader and library manager with a mode
 -   **Job System**: Background processing for downloads and scans, managed via `multiprocessing`.
 -   **Real-time Updates**: WebSocket-based activity feed for zero-latency status tracking.
 -   **Live Logs**: View real-time logs for any active job directly in the browser.
--   **Library Management**: Organize your downloaded music and automatically fix metadata.
+-   **Library Management**: Scan your library to fix folder structures and missing tags automatically.
 -   **File Browser**: Built-in file explorer to browse your library within the app.
 -   **Dockerized**: Easy deployment with Docker and Docker Compose.
 
