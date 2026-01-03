@@ -1,5 +1,5 @@
 import click
-from .downloader import download_artist_albums, download_search_query, scan_and_fix_library
+from .core.downloader import download_artist_albums, download_search_query, scan_and_fix_library
 
 @click.command()
 @click.option('--artist-url', required=False, help='URL of the artist on music.youtube.com')

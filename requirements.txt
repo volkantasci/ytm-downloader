@@ -3,3 +3,7 @@ click
 selenium
 webdriver-manager
 mutagen
+fastapi
+uvicorn
+pydantic
+python-multipart

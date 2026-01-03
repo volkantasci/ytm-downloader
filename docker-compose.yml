@@ -1,12 +1,27 @@
-version: '3.8'
-
 services:
-  downloader:
+  backend:
     build: .
-    image: ytm-downloader
+    image: ytm-downloader-backend
+    container_name: ytm-backend
+    entrypoint: ["./entrypoint.sh", "api"]
     volumes:
+      - ./src:/app/src
       - ./music:/app/music
+    ports:
+      - "8001:8000"
     environment:
       - PYTHONUNBUFFERED=1
-    # You can override the command at runtime:
-    # docker-compose run --rm downloader --artist-name "Metallica" --dry-run
+    restart: unless-stopped
+
+  frontend:
+    image: node:20-slim
+    container_name: ytm-frontend
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5174:5173"
+    command: sh -c "npm install && npm run dev -- --host"
+    environment:
+      - CHOKIDAR_USEPOLLING=true # Use polling for file changes
