@@ -1,56 +1,40 @@
-# ytm-downloader
+# YTM Downloader v2.0.0 (Agentic)
 
-A robust, full-stack web application and containerized solution for archiving high-fidelity music albums from YouTube Music. Designed to populate self-hosted music streaming servers like **Navidrome**, **Jellyfin**, or **Plex**.
+A powerful, self-hosted YouTube Music downloader and library manager with a modern web interface.
 
-## 🚀 About The Project
+![Dashboard](gallery/dashboard.png)
 
-This tool automates the process of finding, scraping, and downloading full discographies from YouTube Music. It is now a **Web Application** featuring a modern React frontend and a FastAPI backend, making it easier than ever to manage your downloads.
+## Features
 
-It solves common scraping challenges (like headless browser detection) and prioritizes audio quality, organizing files into a structure perfectly suited for music servers.
+-   **Modern Web UI**: Built with React, Tailwind CSS, and a cyberpunk-inspired dark theme.
+-   **Job System**: Background processing for downloads and scans, managed via `multiprocessing`.
+-   **Real-time Updates**: WebSocket-based activity feed for zero-latency status tracking.
+-   **Live Logs**: View real-time logs for any active job directly in the browser.
+-   **Library Management**: Organize your downloaded music and automatically fix metadata.
+-   **File Browser**: Built-in file explorer to browse your library within the app.
+-   **Dockerized**: Easy deployment with Docker and Docker Compose.
 
-### Key Features
+## Gallery
 
--   **Web Interface**: A beautiful, dark-themed dashboard to manage downloads and library.
--   **High-Fidelity Audio**: Prioritizes **M4A (AAC)** / Opus streams (Best Audio) over legacy MP3 conversion.
--   **Smart Navigation**: Uses Selenium with **Chromium** to navigate dynamic YouTube Music pages.
--   **Anti-Detection**: Built-in `XVFB` (virtual display) integration to bypass "headless browser" blocks.
--   **Rate Limiting**: Intelligent random delays between downloads to prevent IP blocking/throttling.
--   **Smart History**: Tracks downloaded songs in `download_archive.txt` to ensure you never download the same song twice.
--   **Size Filter**: Use `--max-album-length` (or UI setting) to skip massive compilations or playlists.
--   **Navidrome Ready**: Automatically organizes content into `Artist/Album/Song` hierarchy.
--   **Dockerized**: Zero-dependency cleanup. Runs entirely within containers.
+### Dashboard & Activity Feed
+![Dashboard with Action List](gallery/dashboard-with-action-list.png)
 
-## 🛠 Architecture
+### Live Logs
+![Action Logs](gallery/action-logs.png)
 
-The project is built on a modern stack:
-*   **Backend**: Python (FastAPI) + Selenium/Chromium (Scraping) + yt-dlp (Download Core)
-*   **Frontend**: React + TypeScript + Vite (Single Page Application)
-*   **Infrastructure**: Docker Compose (Orchestration)
+### Library Management
+![Library](gallery/library.png)
 
-## 📂 Output Structure
+### File Browser
+![File Browser](gallery/file-browser.png)
 
-Music is saved in the following hierarchy, ready to be mounted by your media server:
-
-```text
-music/
-├── Metallica/
-│   ├── Reload/
-│   │   ├── Fuel.m4a
-│   │   ├── The Memory Remains.m4a
-│   │   └── ...
-│   └── ...
-└── ...
-```
-
-## 🐳 Getting Started (Docker)
-
-This is the recommended way to run the application.
+## Installation
 
 ### Prerequisites
-*   Docker
-*   Docker Compose
+-   Docker
+-   Docker Compose
 
-### Installation
+### Quick Start
 
 1.  Clone the repository:
     ```bash
@@ -60,60 +44,25 @@ This is the recommended way to run the application.
 
 2.  Start the application:
     ```bash
-    docker-compose up -d --build
+    docker compose up -d --build
     ```
 
-3.  Access the Web Interface:
-    Open [http://localhost:5174](http://localhost:5174) in your browser.
+3.  Access the UI:
+    Open your browser and navigate to `http://localhost:3000`.
 
-    > **Note**: The backend API is available at [http://localhost:8001/docs](http://localhost:8001/docs).
+## Usage
 
-### Usage (Web)
+### Downloading Music
+-   **Search Download**: Enter a search query (e.g., "Chill Lofi") and set a limit. The system will find the top results and download them.
+-   **Artist Discography**: Enter an artist's name (or URL) to download their albums. You can limit the number of albums and songs per album.
 
--   **Search**: Enter a song or album name (e.g., "Pink Floyd Comfortably Numb") to download it.
--   **Artist**: Enter an Artist Name or URL to download their entire discography.
--   **Library**: Use the "Scan & Fix" button to organize and tag your existing files.
+### Managing Library
+-   Go to the **Library** page.
+-   **Scan & Fix Metadata**: Run this job to scan your `/app/music` directory. It will organize files into `Artist/Album` folders and apply correct tagging.
+-   **Browse Files**: Use the file browser to verify your downloads.
 
-### Usage (CLI - Legacy)
+## Architecture
 
-You can still use the CLI command for one-off tasks or scripting. Note that the service name in `docker-compose` is now `backend`.
-
-**Basic Download:**
-```bash
-docker-compose run --rm backend --artist-name "Metallica"
-```
-
-**Search & Download:**
-```bash
-docker-compose run --rm backend --search "Beyhude"
-```
-
-## 🔧 Local Development
-
-To run the project locally without Docker:
-
-### Backend
-1.  Install system dependencies (Chromium, XVFB, FFmpeg).
-2.  Install Python dependencies: `pip install -r requirements.txt`
-3.  Run the API:
-    ```bash
-    xvfb-run --auto-servernum --server-args="-screen 0 1280x1024x24" uvicorn src.api.main:app --reload --port 8001
-    ```
-
-### Frontend
-1.  Navigate to `frontend/`:
-    ```bash
-    cd frontend
-    ```
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
-3.  Start dev server:
-    ```bash
-    npm run dev
-    ```
-
-## 📜 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
+-   **Frontend**: React, Vite, TSX, Tailwind CSS, Zustand (State)
+-   **Backend**: Python, FastAPI, Mutagen (Metadata), yt-dlp (Download)
+-   **Infrastructure**: Docker Compose (Frontend + Backend services)
