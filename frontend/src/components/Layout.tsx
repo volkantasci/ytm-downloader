@@ -18,9 +18,7 @@ export const Layout: React.FC = () => {
             {/* Mobile Header */}
             <div className="lg:hidden flex items-center justify-between p-4 border-b border-gray-800 bg-gray-900/50 backdrop-blur-md sticky top-0 z-40">
                 <div className="flex items-center gap-2 font-bold text-xl tracking-tight">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                        <Disc className="w-5 h-5 text-white" />
-                    </div>
+                    <img src="/logo.svg" alt="Logo" className="w-8 h-8 rounded-lg shadow-lg shadow-blue-500/20" />
                     <span>YTM<span className="text-blue-500">Downloader</span></span>
                 </div>
                 <button onClick={toggleSidebar} className="p-2 hover:bg-gray-800 rounded-lg text-gray-400 hover:text-white">
@@ -37,9 +35,7 @@ export const Layout: React.FC = () => {
                     <div className="flex flex-col h-full">
                         <div className="p-6">
                             <div className="hidden lg:flex items-center gap-2 font-bold text-xl tracking-tight mb-8">
-                                <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                                    <Disc className="w-5 h-5 text-white" />
-                                </div>
+                                <img src="/logo.svg" alt="Logo" className="w-9 h-9 rounded-xl shadow-lg shadow-blue-500/20" />
                                 <span>YTM<span className="text-blue-500">Downloader</span></span>
                             </div>
 
